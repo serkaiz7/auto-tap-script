@@ -10,6 +10,17 @@ show_hamster() {
 EOF
 }
 
+# Check if required packages are installed
+if ! command -v termux-screeninfo &> /dev/null; then
+    echo "termux-screeninfo not found. Installing..."
+    pkg install -y termux-api
+fi
+
+if ! command -v bc &> /dev/null; then
+    echo "bc not found. Installing..."
+    pkg install -y bc
+fi
+
 # Get user inputs
 echo "Enter the duration of tapping in hours, minutes, or seconds (e.g., 1h, 30m, 45s): "
 read duration
@@ -26,6 +37,12 @@ echo "Choose the position for tapping:
 6. Between Top and Center
 7. Between Bottom and Center"
 read position
+
+echo "Enter the number of taps per second: "
+read taps_per_second
+
+echo "Enter the interval between taps in seconds: "
+read interval_between_taps
 
 # Define screen dimensions and tap positions
 screen_width=$(termux-screeninfo | grep "width" | awk '{print $2}')
@@ -63,8 +80,11 @@ sleep $delay
 # Execute the tap for the specified duration
 end_time=$((SECONDS + duration_in_seconds))
 while [ $SECONDS -lt $end_time ]; do
-    input tap $x $y
-    sleep 0.5 # Adjust this sleep time if necessary
+    for (( i=0; i<$taps_per_second; i++ )); do
+        input tap $x $y
+        sleep $interval_between_taps
+    done
+    sleep $interval_between_taps # Interval between tap sets
 done
 
 echo "Tapping completed."
