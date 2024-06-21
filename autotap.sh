@@ -39,14 +39,9 @@ read taps_per_second
 echo "Enter the interval between taps in seconds: "
 read interval_between_taps
 
-# Get screen dimensions using dumpsys
-screen_width=$(getprop ro.sf.lcd_density)
-screen_height=$(getprop ro.sf.lcd_density)
-
-if [[ -z "$screen_width" || -z "$screen_height" ]]; then
-    echo "Failed to get screen dimensions. Please check your setup."
-    exit 1
-fi
+# Hardcoded screen dimensions for simplicity
+screen_width=720
+screen_height=1600
 
 # Define tap positions
 center_x=$((screen_width / 2))
