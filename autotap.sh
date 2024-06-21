@@ -39,10 +39,9 @@ read taps_per_second
 echo "Enter the interval between taps in seconds: "
 read interval_between_taps
 
-# Get screen dimensions from /sys/class/graphics/fb0/virtual_size
-screen_size=$(cat /sys/class/graphics/fb0/virtual_size)
-screen_width=$(echo $screen_size | cut -d, -f1)
-screen_height=$(echo $screen_size | cut -d, -f2)
+# Get screen dimensions using getprop
+screen_width=$(getprop persist.sys.screen_density | cut -d'x' -f1)
+screen_height=$(getprop persist.sys.screen_density | cut -d'x' -f2)
 
 # Define tap positions
 center_x=$((screen_width / 2))
