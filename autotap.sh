@@ -11,11 +11,6 @@ EOF
 }
 
 # Check if required packages are installed
-if ! command -v termux-screeninfo &> /dev/null; then
-    echo "termux-screeninfo not found. Installing..."
-    pkg install -y termux-api
-fi
-
 if ! command -v bc &> /dev/null; then
     echo "bc not found. Installing..."
     pkg install -y bc
@@ -44,9 +39,12 @@ read taps_per_second
 echo "Enter the interval between taps in seconds: "
 read interval_between_taps
 
-# Define screen dimensions and tap positions
-screen_width=$(termux-screeninfo | grep "width" | awk '{print $2}')
-screen_height=$(termux-screeninfo | grep "height" | awk '{print $2}')
+# Get screen dimensions using wm size
+screen_size=$(wm size)
+screen_width=$(echo $screen_size | grep -oP '(?<=Physical size: )\d+(?=x)')
+screen_height=$(echo $screen_size | grep -oP '(?<=x)\d+')
+
+# Define tap positions
 center_x=$((screen_width / 2))
 center_y=$((screen_height / 2))
 top_y=100
@@ -76,6 +74,9 @@ show_hamster
 
 # Wait for the specified delay
 sleep $delay
+
+# Calculate the interval between taps
+interval=$(echo "scale=2; 1 / $taps_per_second" | bc)
 
 # Execute the tap for the specified duration
 end_time=$((SECONDS + duration_in_seconds))
