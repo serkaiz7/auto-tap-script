@@ -39,10 +39,10 @@ read taps_per_second
 echo "Enter the interval between taps in seconds: "
 read interval_between_taps
 
-# Get screen dimensions using wm size
-screen_size=$(wm size)
-screen_width=$(echo $screen_size | grep -oP '(?<=Physical size: )\d+(?=x)')
-screen_height=$(echo $screen_size | grep -oP '(?<=x)\d+')
+# Get screen dimensions using dumpsys
+screen_info=$(dumpsys display | grep -oP 'deviceWidth=\d+.*?deviceHeight=\d+')
+screen_width=$(echo $screen_info | grep -oP 'deviceWidth=\d+' | grep -oP '\d+')
+screen_height=$(echo $screen_info | grep -oP 'deviceHeight=\d+' | grep -oP '\d+')
 
 # Define tap positions
 center_x=$((screen_width / 2))
