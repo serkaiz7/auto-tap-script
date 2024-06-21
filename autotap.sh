@@ -10,12 +10,6 @@ show_hamster() {
 EOF
 }
 
-# Check if required packages are installed
-if ! command -v bc &> /dev/null; then
-    echo "bc not found. Installing..."
-    pkg install -y bc
-fi
-
 # Get user inputs
 echo "Enter the duration of tapping in hours, minutes, or seconds (e.g., 1h, 30m, 45s): "
 read duration
@@ -66,7 +60,16 @@ case $position in
 esac
 
 # Convert duration to seconds
-duration_in_seconds=$(echo $duration | sed 's/h/*3600/; s/m/*60/; s/s/*1/' | bc)
+if [[ $duration =~ ^[0-9]+h$ ]]; then
+    duration_in_seconds=$(( ${duration%h} * 3600 ))
+elif [[ $duration =~ ^[0-9]+m$ ]]; then
+    duration_in_seconds=$(( ${duration%m} * 60 ))
+elif [[ $duration =~ ^[0-9]+s$ ]]; then
+    duration_in_seconds=${duration%s}
+else
+    echo "Invalid duration format"
+    exit 1
+fi
 
 # Show hamster ASCII art
 show_hamster
